@@ -128,34 +128,39 @@ export default function Player() {
     }
   };
 
+  const [useEmbedFallback, setUseEmbedFallback] = useState(false);
+
+  useEffect(() => {
+    setUseEmbedFallback(false);
+  }, [currentSong]);
+
   const handleAudioError = () => {
     const a = audioRef.current;
     if (!a || !currentSong) return;
 
-    if (retryRef.current < 2) {
-      retryRef.current++;
-      setIsLoading(true);
-      setTimeout(() => {
-        if (a) {
-          a.src = `${currentSong.audioUrl}?force=true&t=${Date.now()}`;
-          a.load();
-          a.play().catch(() => {});
-        }
-      }, 1000);
-      return;
-    }
-
-    setError('Stream unavailable');
+    console.warn('[Player] Backend stream unavailable on cloud serverless. Switching to Direct Browser Audio Engine for:', currentSong._id);
+    setUseEmbedFallback(true);
+    setError(null);
     setIsLoading(false);
   };
 
   const audioEl = (
-    <audio
-      ref={audioRef}
-      preload="auto"
-      onEnded={nextSong}
-      onError={handleAudioError}
-    />
+    <>
+      <audio
+        ref={audioRef}
+        preload="auto"
+        onEnded={nextSong}
+        onError={handleAudioError}
+      />
+      {useEmbedFallback && currentSong && (
+        <iframe
+          src={`https://www.youtube.com/embed/${currentSong._id}?autoplay=1&enablejsapi=1`}
+          title={currentSong.title}
+          style={{ width: 1, height: 1, position: 'absolute', opacity: 0, pointerEvents: 'none' }}
+          allow="autoplay"
+        />
+      )}
+    </>
   );
 
   if (!currentSong) {
