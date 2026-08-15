@@ -2,25 +2,14 @@ import { createContext, useState, useEffect } from 'react';
 
 export const MusicContext = createContext();
 
-const DEFAULT_HITS = [
-  { _id: 'v_z4-Zg961I', title: 'Kesariya - Brahmastra', artist: 'Arijit Singh, Pritam', cover: 'https://i.ytimg.com/vi/v_z4-Zg961I/hqdefault.jpg', audioUrl: '/api/stream/v_z4-Zg961I', duration: '4:28' },
-  { _id: 'ElZfdU54Cp8', title: 'Apna Bana Le - Bhediya', artist: 'Arijit Singh, Sachin-Jigar', cover: 'https://i.ytimg.com/vi/ElZfdU54Cp8/hqdefault.jpg', audioUrl: '/api/stream/ElZfdU54Cp8', duration: '4:21' },
-  { _id: 'hV_1dZ0K0z0', title: 'Chaleya - Jawan', artist: 'Arijit Singh, Shilpa Rao', cover: 'https://i.ytimg.com/vi/hV_1dZ0K0z0/hqdefault.jpg', audioUrl: '/api/stream/hV_1dZ0K0z0', duration: '3:20' },
-  { _id: '2g811KoI62w', title: 'Tum Se Hi - Jab We Met', artist: 'Mohit Chauhan', cover: 'https://i.ytimg.com/vi/2g811KoI62w/hqdefault.jpg', audioUrl: '/api/stream/2g811KoI62w', duration: '5:23' },
-  { _id: 'W0w9179yD8U', title: 'O Maahi - Dunki', artist: 'Arijit Singh, Pritam', cover: 'https://i.ytimg.com/vi/W0w9179yD8U/hqdefault.jpg', audioUrl: '/api/stream/W0w9179yD8U', duration: '3:53' },
-  { _id: 'BddP6PYo2gs', title: 'Kesariya (Dance Mix)', artist: 'Arijit Singh, Pritam', cover: 'https://i.ytimg.com/vi/BddP6PYo2gs/hqdefault.jpg', audioUrl: '/api/stream/BddP6PYo2gs', duration: '3:15' },
-  { _id: 'H5v3kku4y6Q', title: 'As It Was', artist: 'Harry Styles', cover: 'https://i.ytimg.com/vi/H5v3kku4y6Q/hqdefault.jpg', audioUrl: '/api/stream/H5v3kku4y6Q', duration: '2:47' },
-  { _id: 'kJQP7kiw5Fk', title: 'Despacito', artist: 'Luis Fonsi ft. Daddy Yankee', cover: 'https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg', audioUrl: '/api/stream/kJQP7kiw5Fk', duration: '3:47' },
-];
-
 export function MusicProvider({ children }) {
-  const [songs, setSongs] = useState(DEFAULT_HITS);
-  const [currentSong, setCurrentSong] = useState(DEFAULT_HITS[0]);
-  const [playlist, setPlaylist] = useState(DEFAULT_HITS);
+  const [songs, setSongs] = useState([]);
+  const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [playlist, setPlaylist] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [shuffle, setShuffle] = useState(false);
-  const [repeatMode, setRepeatMode] = useState(0);
+  const [repeatMode, setRepeatMode] = useState(0); // 0: None, 1: One, 2: All
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem('music_favorites');
     return saved ? JSON.parse(saved) : [];
@@ -46,15 +35,16 @@ export function MusicProvider({ children }) {
     }
   }, [user]);
 
-  // On mount, load fresh search hits if available
+  // On mount, load some default songs
   useEffect(() => {
     const fetchDefaults = async () => {
       try {
         const res = await fetch('/api/search?q=bollywood%20hits');
         const data = await res.json();
-        if (data.results && Array.isArray(data.results) && data.results.length > 0) {
+        if (data.results && Array.isArray(data.results)) {
           setSongs(data.results);
           setPlaylist(data.results);
+          if (data.results.length > 0) setCurrentSong(data.results[0]);
         }
       } catch (e) {
         console.error('Default fetch failed:', e);
@@ -108,12 +98,13 @@ export function MusicProvider({ children }) {
   };
 
   const loginWithGoogle = (customData = null) => {
-    const name = customData?.name || 'Shubham';
-    const email = customData?.email || 'user@gmail.com';
-    const avatar = customData?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`;
-    
-    const newUser = { name, email, avatar, loggedInAt: new Date().toISOString() };
-    setUser(newUser);
+    const googleUser = customData || {
+      name: 'Music Fan',
+      email: 'fan@gmail.com',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      provider: 'google',
+    };
+    setUser(googleUser);
     setIsAuthModalOpen(false);
   };
 
@@ -123,11 +114,12 @@ export function MusicProvider({ children }) {
 
   return (
     <MusicContext.Provider value={{
-      songs, currentSong, isPlaying, playlist, loading,
+      songs, currentSong, isPlaying, loading, togglePlay,
+      nextSong, prevSong, playSong, playlist,
       shuffle, setShuffle, repeatMode, setRepeatMode,
-      favorites, toggleFavorite, togglePlay, nextSong, prevSong, playSong,
+      favorites, toggleFavorite,
       user, loginWithGoogle, logout,
-      isAuthModalOpen, setIsAuthModalOpen,
+      isAuthModalOpen, setIsAuthModalOpen
     }}>
       {children}
     </MusicContext.Provider>
