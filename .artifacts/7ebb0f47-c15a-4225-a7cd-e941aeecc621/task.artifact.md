@@ -1,0 +1,11 @@
+- `[x]` Library Migration Fix (ytdl-core -> play-dl)
+    - `[x]` Uninstall `@distube/ytdl-core` and install `play-dl` in backend
+    - `[x]` Refactor `backend/src/routes/stream.ts` with `play-dl` logic
+    - `[x]` Update `backend/src/routes/search.ts` to use `play-dl`
+    - `[ ]` Verify playback and search
+- `[x]` Final "No-Fail" Audio Streaming Fix (Attempt 5)
+- `[x]` Final Audio Engine Fix (Attempt 4)
+- `[x]` Ultimate Playback Fix (Attempt 3)
+- `[x]` Emergency Playback Fix (Attempt 2)
+- `[x]` Bulletproof Audio Playback Fix (Attempt 1)
+- `[x]` Premium System Upgrade

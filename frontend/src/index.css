@@ -1,0 +1,317 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Variables ── */
+:root {
+  --bg:           #06090e;
+  --window:       #0a0e17;
+  --panel:        #111723;
+  --panel-strong: #172030;
+  --panel-hover:  #1d283c;
+  --hairline:     rgba(0, 212, 255, 0.08);
+
+  --accent-rgb:   0, 212, 255;
+  --accent:       #00d4ff;
+  --accent-hover: #33ddff;
+  --accent-2:     #0ea5e9;
+
+  --play-gradient: linear-gradient(135deg, #00d4ff 0%, #0055cc 100%);
+  --fg:           #ffffff;
+  --muted:        #7a90b0;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Figtree', system-ui, -apple-system, sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+button { font-family: inherit; color: inherit; cursor: pointer; border: none; background: none; }
+img    { display: block; }
+input  { font-family: inherit; }
+
+::selection { background: rgba(0, 212, 255, 0.35); }
+
+/* ── Lightweight Scrollbar ── */
+::-webkit-scrollbar              { width: 5px; height: 5px; }
+::-webkit-scrollbar-track        { background: transparent; }
+::-webkit-scrollbar-thumb        { background: rgba(0, 212, 255, 0.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(0, 212, 255, 0.4); }
+
+/* ── Wallpaper ── */
+.wallpaper {
+  height: 100dvh;
+  width: 100vw;
+  padding: 16px;
+  display: grid;
+  place-items: stretch;
+  background: #06090e;
+  overflow: hidden;
+  position: relative;
+}
+
+.wallpaper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(800px 500px at 85% 0%, rgba(0, 212, 255, 0.1), transparent 70%);
+  pointer-events: none;
+}
+
+/* ── App window card (PC) ── */
+.app-window {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  max-width: 1520px;
+  margin: 0 auto;
+  border-radius: 20px;
+  background: var(--window);
+  border: 1px solid rgba(0, 212, 255, 0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px;
+}
+
+/* ── Range Inputs ── */
+input[type='range'] { -webkit-appearance: none; appearance: none; background: transparent; }
+input[type='range']::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 2px; background: rgba(255,255,255,0.12);
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px; height: 12px; border-radius: 50%; background: #fff;
+  margin-top: -4px; cursor: pointer; opacity: 0; transition: opacity 0.15s;
+}
+input[type='range']:hover::-webkit-slider-thumb { opacity: 1; }
+
+/* ── Keyframe Animations ── */
+@keyframes eq-bar {
+  0%, 100% { transform: scaleY(0.25); }
+  50%       { transform: scaleY(1); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* ── EQ Bars ── */
+.eq-bar {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+.eq-bar span {
+  width: 3px;
+  background: var(--accent);
+  border-radius: 1px;
+  transform-origin: bottom;
+  animation: eq-bar 0.9s ease-in-out infinite;
+}
+.eq-bar span:nth-child(1) { animation-delay: -0.3s; }
+.eq-bar span:nth-child(2) { animation-delay: -0.1s; background: var(--accent-2); }
+.eq-bar span:nth-child(3) { animation-delay: -0.5s; }
+.eq-bar span:nth-child(4) { animation-delay: -0.2s; background: var(--accent-2); }
+
+/* ── Nav Active Strip ── */
+.nav-active-strip {
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 22px;
+  border-radius: 0 4px 4px 0;
+  background: var(--play-gradient);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+}
+
+/* ── Sidebar container ── */
+.sidebar-container {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border-right: 1px solid rgba(0,212,255,0.07);
+  background: rgba(0,0,0,0.2);
+  height: 100%;
+  min-height: 0;
+}
+
+/* ── Fast Song Card ── */
+.song-card {
+  background: var(--panel);
+  border: 1px solid rgba(0,212,255,0.06);
+  border-radius: 14px;
+  padding: 10px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.song-card:hover {
+  background: var(--panel-strong);
+  transform: translateY(-2px);
+  border-color: rgba(0,212,255,0.2);
+}
+.song-card.active {
+  background: rgba(0,212,255,0.07);
+  border-color: rgba(0,212,255,0.35);
+}
+
+.song-card .card-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.song-card:hover .card-overlay,
+.song-card.active .card-overlay { opacity: 1; }
+
+.song-card .cover-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+.fav-btn {
+  position: absolute; top: 8px; right: 8px;
+  width: 28px; height: 28px; border-radius: 8px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s ease;
+  cursor: pointer;
+}
+.fav-btn:hover { transform: scale(1.1); }
+
+/* ── Nav items ── */
+.nav-item {
+  position: relative;
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 12px; border-radius: 10px;
+  text-decoration: none;
+  color: #7a90b0;
+  font-size: 14px; font-weight: 600;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.nav-item:hover { color: #fff; background: rgba(255,255,255,0.04); }
+.nav-item.nav-active { color: #fff; background: rgba(0,212,255,0.08); }
+
+/* ── Controls ── */
+.ctrl-btn {
+  color: #3a5070;
+  transition: color 0.15s ease, transform 0.1s ease;
+  cursor: pointer;
+}
+.ctrl-btn:hover { color: #fff; transform: scale(1.1); }
+.ctrl-btn.active { color: var(--accent); }
+
+.ctrl-btn-nav {
+  color: #c0d0e0;
+  transition: color 0.15s ease, transform 0.1s ease;
+  cursor: pointer;
+}
+.ctrl-btn-nav:hover { color: #fff; transform: scale(1.1); }
+
+.play-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #00d4ff 0%, #0055cc 100%);
+  border: none; cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.15s ease;
+}
+.play-btn:hover { transform: scale(1.08); }
+.play-btn.playing {
+  box-shadow: 0 0 16px rgba(0,212,255,0.6);
+}
+
+.seek-bar { cursor: pointer; }
+.seek-bar .seek-thumb {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+.seek-bar:hover .seek-thumb { opacity: 1; }
+
+/* ── Mobile Header & Nav Defaults (Hidden on PC) ── */
+.mobile-header { display: none; }
+.mobile-nav    { display: none; }
+
+/* ── Responsive Rules ── */
+@media (min-width: 768px) {
+  .mobile-header { display: none !important; }
+  .mobile-nav    { display: none !important; }
+  .sidebar-container { display: flex !important; }
+}
+
+@media (max-width: 767px) {
+  .wallpaper {
+    padding: 0;
+  }
+  .app-window {
+    border-radius: 0;
+    border: none;
+    height: 100dvh;
+  }
+  .sidebar-container {
+    display: none !important;
+  }
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    padding: 0 16px;
+    background: #090e18;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .mobile-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 54px;
+    background: #090e18;
+    border-top: 1px solid rgba(0, 212, 255, 0.08);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .main-scroll-area {
+    padding: 16px 14px 20px;
+  }
+  /* Responsive card grid for small screens */
+  .songs-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .volume-container {
+    display: none !important;
+  }
+}
