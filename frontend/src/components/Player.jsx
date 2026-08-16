@@ -27,10 +27,15 @@ export default function Player() {
   const [isMuted,       setIsMuted]       = useState(false);
   const [isLoading,     setIsLoading]     = useState(false);
   const [useIframe,     setUseIframe]     = useState(false);
-  const [iframePlaying, setIframePlaying] = useState(false);
   const [iframeSeekPos, setIframeSeekPos] = useState(0);
 
   const isFav = favorites.includes(currentSong?._id);
+
+  // Check if running on Cloud deployment (Vercel)
+  const isCloudEnv = typeof window !== "undefined" && (
+    window.location.hostname.includes("vercel.app") ||
+    window.location.hostname.includes("now.sh")
+  );
 
   // Parse duration accurately
   const parseSongDuration = useCallback((song) => {
@@ -64,7 +69,7 @@ export default function Player() {
   useEffect(() => {
     if (!useIframe) return;
 
-    if (iframePlaying) {
+    if (isPlaying) {
       iframeStartRef.current = Date.now();
       iframeTimerRef.current = setInterval(() => {
         if (isDragging.current) return;
@@ -80,27 +85,43 @@ export default function Player() {
     }
 
     return () => clearInterval(iframeTimerRef.current);
-  }, [useIframe, iframePlaying, duration]);
+  }, [useIframe, isPlaying, duration]);
 
-  // ── LOAD & LISTEN TO NATIVE AUDIO EVENTS ──────────────────────────────
+  // ── SONG LOAD HANDLER ──────────────────────────────────────────────────
   useEffect(() => {
-    const a = audioRef.current;
-    if (!a || !currentSong) return;
+    if (!currentSong) return;
 
     const initialDur = parseSongDuration(currentSong);
 
-    // Reset player state
-    setIsLoading(true);
+    // Stop native audio completely
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.removeAttribute("src");
+    }
+
+    // Reset player state for new song
     setProgress(0);
     setCurrentTime(0);
     setDuration(initialDur);
-    setUseIframe(false);
-    setIframePlaying(false);
     setIframeSeekPos(0);
     clearInterval(iframeTimerRef.current);
     iframeElapsed.current = 0;
 
-    a.pause();
+    // ON VERCEL CLOUD: Use direct iframe engine synchronously so user click gesture enables instant autoplay!
+    if (isCloudEnv) {
+      setUseIframe(true);
+      setIsPlaying(true);
+      setIsLoading(false);
+      return;
+    }
+
+    // ON LOCALHOST: Try HTML5 audio first
+    const a = audioRef.current;
+    if (!a) return;
+
+    setIsLoading(true);
+    setUseIframe(false);
+
     a.src = `${currentSong.audioUrl}?t=${Date.now()}`;
     a.volume = isMuted ? 0 : volume;
     a.load();
@@ -149,9 +170,9 @@ export default function Player() {
     const onEnded = () => nextSong();
 
     const onError = () => {
-      console.warn("[Player] Stream error -> switching to Cloud Iframe Audio Engine:", currentSong._id);
+      console.warn("[Player] Local stream error -> fallback to Cloud Iframe Audio Engine:", currentSong._id);
       setUseIframe(true);
-      setIframePlaying(true);
+      setIsPlaying(true);
       setIsLoading(false);
       setDuration(initialDur);
     };
@@ -187,7 +208,9 @@ export default function Player() {
     if (useIframe) {
       const nextState = !isPlaying;
       setIsPlaying(nextState);
-      setIframePlaying(nextState);
+      if (nextState) {
+        setIframeSeekPos(Math.floor(currentTime));
+      }
       return;
     }
 
@@ -204,7 +227,6 @@ export default function Player() {
         .catch((err) => {
           console.warn("[Player] Play call error -> using iframe fallback:", err);
           setUseIframe(true);
-          setIframePlaying(true);
           setIsPlaying(true);
           setIsLoading(false);
         });
@@ -268,11 +290,11 @@ export default function Player() {
 
   const toggleMute = () => setIsMuted((m) => !m);
 
-  // Audio elements
+  // Audio elements: Iframe is only rendered when isPlaying is TRUE!
   const audioEl = (
     <>
       <audio ref={audioRef} preload="auto" />
-      {useIframe && currentSong && (
+      {useIframe && isPlaying && currentSong && (
         <iframe
           key={`${currentSong._id}-${iframeSeekPos}`}
           src={`https://www.youtube.com/embed/${currentSong._id}?autoplay=1&enablejsapi=1&start=${iframeSeekPos}`}
@@ -352,7 +374,7 @@ export default function Player() {
                 style={{ width: 44, height: 44, borderRadius: 10, objectFit: "cover", display: "block", boxShadow: "0 4px 16px rgba(0,0,0,0.6)" }}
                 onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&auto=format&fit=crop&q=80"; }}
               />
-              {(isPlaying || (useIframe && iframePlaying)) && (
+              {isPlaying && (
                 <div style={{
                   position: "absolute", inset: -3, borderRadius: 13,
                   border: `1.5px solid ${useIframe ? "rgba(255,42,95,0.8)" : "rgba(0,212,255,0.7)"}`,
