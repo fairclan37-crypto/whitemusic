@@ -167,61 +167,54 @@ export default function Player() {
     setIframePlaying(isPlaying);
   }, [isPlaying, useIframe]);
 
-  // Volume
+  // ── VOLUME & MUTE CONTROL (HTML5 + YouTube Iframe) ────────────────────
   useEffect(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.volume = isMuted ? 0 : volume;
-    a.muted  = isMuted;
-  }, [volume, isMuted]);
+    const targetVol = isMuted ? 0 : volume;
 
-  // ── SEEK HANDLER (SCRUBBING & FORWARD/REWIND) ──────────────────────────
-  const seekToTime = useCallback((targetTime) => {
-    const maxDur = duration || 240;
-    const clampedTime = Math.min(maxDur, Math.max(0, targetTime));
-    const newPercent  = (clampedTime / maxDur) * 100;
-
-    setCurrentTime(clampedTime);
-    setProgress(newPercent);
-
-    if (useIframe) {
-      // For YouTube iframe: restart iframe with start parameter
-      iframeElapsed.current = clampedTime;
-      iframeStartRef.current = Date.now();
-      setIframeSeekPos(Math.floor(clampedTime));
-      return;
-    }
-
+    // 1. Set HTML5 Audio volume
     const a = audioRef.current;
     if (a) {
-      a.currentTime = clampedTime;
+      a.volume = targetVol;
+      a.muted  = isMuted;
     }
-  }, [duration, useIframe]);
 
-  const handleSeekClick = useCallback((e) => {
-    const rect = progressRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-    const targetDur = duration || 240;
-    seekToTime(x * targetDur);
-  }, [duration, seekToTime]);
+    // 2. Set YouTube Iframe volume via postMessage
+    if (useIframe && iframeRef.current?.contentWindow) {
+      try {
+        const win = iframeRef.current.contentWindow;
+        const volPercent = Math.round(targetVol * 100);
+        win.postMessage(JSON.stringify({ event: 'command', func: 'setVolume', args: [volPercent] }), '*');
+        if (isMuted) {
+          win.postMessage(JSON.stringify({ event: 'command', func: 'mute' }), '*');
+        } else {
+          win.postMessage(JSON.stringify({ event: 'command', func: 'unMute' }), '*');
+        }
+      } catch { /* postMessage fail-safe */ }
+    }
+  }, [volume, isMuted, useIframe]);
 
-  const handleMouseMove = useCallback((e) => {
-    if (!isDragging.current) return;
-    handleSeekClick(e);
-  }, [handleSeekClick]);
-
-  // Quick 10s Rewind and 10s Forward
-  const rewind10 = () => seekToTime(currentTime - 10);
-  const forward10 = () => seekToTime(currentTime + 10);
-
-  const handleVolume = (e) => {
+  const handleVolumeChange = (e) => {
     const val = parseFloat(e.target.value);
     setVolume(val);
-    setIsMuted(val === 0);
+    if (val > 0) {
+      lastVolumeRef.current = val;
+      setIsMuted(false);
+    } else {
+      setIsMuted(true);
+    }
   };
 
-  const toggleMute = () => setIsMuted((m) => !m);
+  const toggleMute = () => {
+    if (isMuted) {
+      setIsMuted(false);
+      if (volume === 0) {
+        setVolume(lastVolumeRef.current || 0.75);
+      }
+    } else {
+      if (volume > 0) lastVolumeRef.current = volume;
+      setIsMuted(true);
+    }
+  };
 
   // ── AUDIO + IFRAME ────────────────────────────────────────────────────
   const audioEl = (
@@ -229,6 +222,7 @@ export default function Player() {
       <audio ref={audioRef} preload="auto" />
       {useIframe && currentSong && (
         <iframe
+          ref={iframeRef}
           key={`${currentSong._id}-${iframeSeekPos}`}
           src={`https://www.youtube.com/embed/${currentSong._id}?autoplay=1&enablejsapi=1&start=${iframeSeekPos}`}
           title={currentSong.title}
@@ -391,15 +385,21 @@ export default function Player() {
             </button>
           </div>
 
-          {/* Right Volume Control */}
+          {/* Right Volume Control (Click Mute Icon or Slide Bar!) */}
           <div className="volume-container" style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, justifyContent: "flex-end" }}>
-            <button onClick={toggleMute} className="ctrl-btn" style={{ padding: 4 }}>
-              {isMuted || volume === 0 ? <VolumeX size={17} /> : <Volume2 size={17} />}
+            <button onClick={toggleMute} className="ctrl-btn" style={{ padding: 4 }} title={isMuted ? "Unmute" : "Mute"}>
+              {isMuted || (isMuted ? 0 : volume) === 0 ? (
+                <VolumeX size={18} color="var(--accent-red)" />
+              ) : (isMuted ? 0 : volume) < 0.5 ? (
+                <Volume1 size={18} color="#fff" />
+              ) : (
+                <Volume2 size={18} color="#fff" />
+              )}
             </button>
 
-            <div style={{ position: "relative", width: 80, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.1)", flexShrink: 0 }}>
+            <div style={{ position: "relative", width: 85, height: 5, borderRadius: 3, background: "rgba(255,255,255,0.12)", flexShrink: 0 }}>
               <div style={{
-                position: "absolute", top: 0, left: 0, height: "100%", borderRadius: 2,
+                position: "absolute", top: 0, left: 0, height: "100%", borderRadius: 3,
                 background: "linear-gradient(90deg, #ff2a5f, #00d4ff)",
                 width: `${(isMuted ? 0 : volume) * 100}%`,
                 pointerEvents: "none", transition: "width 0.1s ease",
@@ -407,7 +407,8 @@ export default function Player() {
               <input
                 type="range" min="0" max="1" step="0.01"
                 value={isMuted ? 0 : volume}
-                onChange={handleVolume}
+                onChange={handleVolumeChange}
+                onInput={handleVolumeChange}
                 style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer" }}
               />
             </div>
