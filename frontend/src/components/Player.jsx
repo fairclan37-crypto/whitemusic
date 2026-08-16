@@ -13,12 +13,14 @@ export default function Player() {
   } = useContext(MusicContext);
 
   const audioRef       = useRef(null);
+  const iframeRef      = useRef(null);
   const progressRef    = useRef(null);
   const isDragging     = useRef(false);
   const isPlayingRef   = useRef(isPlaying);
   const iframeTimerRef = useRef(null);
   const iframeStartRef = useRef(0);
   const iframeElapsed  = useRef(0);
+  const lastVolumeRef  = useRef(0.75);
 
   const [progress,      setProgress]      = useState(0);
   const [currentTime,   setCurrentTime]   = useState(0);
