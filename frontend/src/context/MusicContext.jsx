@@ -55,7 +55,7 @@ export function MusicProvider({ children }) {
     fetchDefaults();
   }, []);
 
-  const togglePlay = () => setIsPlaying(!isPlaying);
+  const togglePlay = () => setIsPlaying(prev => !prev);
 
   const nextSong = () => {
     if (repeatMode === 1) {
@@ -114,7 +114,7 @@ export function MusicProvider({ children }) {
 
   return (
     <MusicContext.Provider value={{
-      songs, currentSong, isPlaying, loading, togglePlay,
+      songs, currentSong, isPlaying, setIsPlaying, loading, togglePlay,
       nextSong, prevSong, playSong, playlist,
       shuffle, setShuffle, repeatMode, setRepeatMode,
       favorites, toggleFavorite,

@@ -7,7 +7,7 @@ import {
 
 export default function Player() {
   const {
-    currentSong, isPlaying, togglePlay, nextSong, prevSong,
+    currentSong, isPlaying, setIsPlaying, nextSong, prevSong,
     shuffle, setShuffle, repeatMode, setRepeatMode,
     favorites, toggleFavorite,
   } = useContext(MusicContext);
@@ -32,7 +32,7 @@ export default function Player() {
 
   const isFav = favorites.includes(currentSong?._id);
 
-  // Helper to parse song duration accurately in seconds
+  // Parse duration accurately
   const parseSongDuration = useCallback((song) => {
     if (!song) return 210;
     if (song.durationSeconds && song.durationSeconds > 5) {
@@ -48,7 +48,7 @@ export default function Player() {
         if (secs > 5) return secs;
       }
     }
-    return 210; // 3m 30s default fallback
+    return 210;
   }, []);
 
   const fmt = (s) => {
@@ -58,10 +58,9 @@ export default function Player() {
     return `${mins}:${String(secs).padStart(2, "0")}`;
   };
 
-  // Sync ref with state
   useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
 
-  // ── IFRAME TIMER: fake timer when iframe plays ────────────────────────
+  // ── IFRAME TIMER FOR CLOUD FALLBACK ────────────────────────────────────
   useEffect(() => {
     if (!useIframe) return;
 
@@ -83,7 +82,7 @@ export default function Player() {
     return () => clearInterval(iframeTimerRef.current);
   }, [useIframe, iframePlaying, duration]);
 
-  // ── LOAD SONG ─────────────────────────────────────────────────────────
+  // ── LOAD & LISTEN TO NATIVE AUDIO EVENTS ──────────────────────────────
   useEffect(() => {
     const a = audioRef.current;
     if (!a || !currentSong) return;
@@ -106,32 +105,35 @@ export default function Player() {
     a.volume = isMuted ? 0 : volume;
     a.load();
 
-    let played = false;
-
-    const tryPlay = () => {
-      if (played) return;
-      played = true;
+    const onPlayEvent = () => {
+      setIsPlaying(true);
       setIsLoading(false);
-      if (isFinite(a.duration) && a.duration > 15) {
-        setDuration(a.duration);
-      }
-      if (isPlayingRef.current) a.play().catch(() => {});
+    };
+    const onPauseEvent = () => {
+      setIsPlaying(false);
+    };
+    const onPlayingEvent = () => {
+      setIsPlaying(true);
+      setIsLoading(false);
+    };
+    const onWaitingEvent = () => {
+      setIsLoading(true);
     };
 
     const onMeta = () => {
-      if (isFinite(a.duration) && a.duration > 15) {
-        setDuration(a.duration);
-      }
+      if (isFinite(a.duration) && a.duration > 15) setDuration(a.duration);
     };
     const onDurationChange = () => {
-      if (isFinite(a.duration) && a.duration > 15) {
-        setDuration(a.duration);
-      }
+      if (isFinite(a.duration) && a.duration > 15) setDuration(a.duration);
     };
 
-    const onCanPlay   = () => tryPlay();
-    const onWaiting   = () => setIsLoading(true);
-    const onPlaying   = () => setIsLoading(false);
+    const onCanPlay = () => {
+      setIsLoading(false);
+      if (isFinite(a.duration) && a.duration > 15) setDuration(a.duration);
+      if (isPlayingRef.current) {
+        a.play().catch(() => {});
+      }
+    };
 
     const onTimeUpdate = () => {
       if (isDragging.current) return;
@@ -147,28 +149,32 @@ export default function Player() {
     const onEnded = () => nextSong();
 
     const onError = () => {
-      console.warn("[Player] Direct stream unavailable. Using YouTube Direct Audio Engine:", currentSong._id);
+      console.warn("[Player] Stream error -> switching to Cloud Iframe Audio Engine:", currentSong._id);
       setUseIframe(true);
       setIframePlaying(true);
       setIsLoading(false);
       setDuration(initialDur);
     };
 
+    a.addEventListener("play",           onPlayEvent);
+    a.addEventListener("pause",          onPauseEvent);
+    a.addEventListener("playing",        onPlayingEvent);
+    a.addEventListener("waiting",        onWaitingEvent);
     a.addEventListener("loadedmetadata", onMeta);
     a.addEventListener("durationchange", onDurationChange);
     a.addEventListener("canplay",        onCanPlay);
-    a.addEventListener("waiting",        onWaiting);
-    a.addEventListener("playing",        onPlaying);
     a.addEventListener("timeupdate",     onTimeUpdate);
     a.addEventListener("ended",          onEnded);
     a.addEventListener("error",          onError);
 
     return () => {
+      a.removeEventListener("play",           onPlayEvent);
+      a.removeEventListener("pause",          onPauseEvent);
+      a.removeEventListener("playing",        onPlayingEvent);
+      a.removeEventListener("waiting",        onWaitingEvent);
       a.removeEventListener("loadedmetadata", onMeta);
       a.removeEventListener("durationchange", onDurationChange);
       a.removeEventListener("canplay",        onCanPlay);
-      a.removeEventListener("waiting",        onWaiting);
-      a.removeEventListener("playing",        onPlaying);
       a.removeEventListener("timeupdate",     onTimeUpdate);
       a.removeEventListener("ended",          onEnded);
       a.removeEventListener("error",          onError);
@@ -176,26 +182,39 @@ export default function Player() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSong?._id]);
 
-  // ── PLAY / PAUSE SYNC ─────────────────────────────────────────────────
-  useEffect(() => {
+  // ── TOGGLE PLAY/PAUSE (SAFE & INSTANT) ────────────────────────────────
+  const handleTogglePlay = () => {
+    if (useIframe) {
+      const nextState = !isPlaying;
+      setIsPlaying(nextState);
+      setIframePlaying(nextState);
+      return;
+    }
+
     const a = audioRef.current;
-    if (!a || useIframe) return;
-    if (isPlaying) {
-      if (a.src && a.readyState >= 2) {
-        a.play().catch(() => {});
-      }
+    if (!a) return;
+
+    if (a.paused) {
+      setIsLoading(true);
+      a.play()
+        .then(() => {
+          setIsPlaying(true);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.warn("[Player] Play call error -> using iframe fallback:", err);
+          setUseIframe(true);
+          setIframePlaying(true);
+          setIsPlaying(true);
+          setIsLoading(false);
+        });
     } else {
       a.pause();
+      setIsPlaying(false);
     }
-  }, [isPlaying, useIframe]);
+  };
 
-  // iframe play/pause sync
-  useEffect(() => {
-    if (!useIframe) return;
-    setIframePlaying(isPlaying);
-  }, [isPlaying, useIframe]);
-
-  // Volume sync
+  // Sync volume
   useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
@@ -203,7 +222,7 @@ export default function Player() {
     a.muted  = isMuted;
   }, [volume, isMuted]);
 
-  // ── SEEK HANDLER (SCRUBBING & FORWARD/REWIND) ──────────────────────────
+  // ── SEEK HANDLER ──────────────────────────────────────────────────────
   const seekToTime = useCallback((targetTime) => {
     const maxD = Math.max(duration, 30);
     const clampedTime = Math.min(maxD, Math.max(0, targetTime));
@@ -381,7 +400,7 @@ export default function Player() {
               </button>
 
               {/* Glowing Play/Pause Button */}
-              <button onClick={togglePlay} className={`play-btn${isPlaying ? " playing" : ""}`}>
+              <button onClick={handleTogglePlay} className={`play-btn${isPlaying ? " playing" : ""}`}>
                 {isLoading
                   ? <div style={{ width: 18, height: 18, border: "2.5px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
                   : isPlaying
