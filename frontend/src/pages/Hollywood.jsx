@@ -18,39 +18,30 @@ export default function Hollywood() {
     <div>
       <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:24 }}>
         <div>
-          <p style={{ fontSize:12, color:'var(--accent)', fontWeight:700, marginBottom:4, letterSpacing:'0.08em', textTransform:'uppercase' }}>Category</p>
-          <h1 style={{ fontSize:28, fontWeight:900, letterSpacing:'-0.03em', display:'flex', alignItems:'center', gap:10, margin:0 }}>
-            <span style={{ display:'inline-block', width:4, height:24, borderRadius:2, background:'linear-gradient(to bottom, #00d4ff, #ff2a5f)', flexShrink:0 }}/>
-            <Globe size={26} color="var(--accent)" /> Hollywood Hits
+          <p style={{ fontSize:13, color:'var(--primary)', fontWeight:700, marginBottom:4, letterSpacing:'0.08em', textTransform:'uppercase' }}>Category</p>
+          <h1 style={{ fontSize:32, fontWeight:800, letterSpacing:'-0.03em', display:'flex', alignItems:'center', gap:12, margin:0 }}>
+            <Globe size={30} color="var(--primary)" /> Hollywood Hits
           </h1>
-          <p style={{ color:'var(--muted)', fontSize:13, marginTop:4 }}>International chartbusters & Billboard hits</p>
+          <p style={{ color:'var(--muted-foreground)', fontSize:14, marginTop:4 }}>International chartbusters & Billboard hits</p>
         </div>
         <span style={{
-          fontSize:11, fontWeight:700, color:'var(--muted)',
-          background:'rgba(255,255,255,0.04)', padding:'4px 12px',
-          borderRadius:8, border:'1px solid rgba(0,212,255,0.15)',
+          fontSize:11.5, fontWeight:800, color:'var(--muted-foreground)',
+          background:'var(--panel)', padding:'6px 14px',
+          borderRadius:999, border:'1px solid var(--hairline)',
           display:'flex', alignItems:'center', gap:6
         }}>
-          <Sparkles size={13} color="var(--accent)" /> {songs.length} Tracks
+          <Sparkles size={14} color="var(--primary)" /> {songs.length} Tracks
         </span>
       </div>
 
       {loading ? (
         <div style={{ display:'flex', justifyContent:'center', padding:'60px 0' }}>
-          <div style={{ display:'flex', alignItems:'flex-end', gap:4, height:36 }}>
-            {[0.9,1.3,1.0,1.2,0.8].map((d,i) => (
-              <div key={i} style={{
-                width:5, borderRadius:3,
-                background: i % 2 === 0 ? 'linear-gradient(to top, #0055cc, #00d4ff)' : 'linear-gradient(to top, #ff2a5f, #ff0044)',
-                transformOrigin:'bottom',
-                animation:`eq-bar ${d*0.6+0.4}s ease-in-out infinite alternate`,
-                animationDelay:`${i*0.07}s`, minHeight:5,
-              }}/>
-            ))}
+          <div className="eq-bar" style={{ height: 36, gap: 4 }}>
+            <span /><span /><span /><span /><span />
           </div>
         </div>
       ) : (
-        <div className="songs-grid" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(150px, 1fr))', gap:14 }}>
+        <div className="songs-grid" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(160px, 1fr))', gap:16 }}>
           {songs.map(s => (
             <SongCard key={s._id} song={s} playlist={songs} />
           ))}

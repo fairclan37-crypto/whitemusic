@@ -313,16 +313,16 @@ export default function Player() {
     return (
       <div>
         {audioEl}
-        <div style={{ height: 1, background: "linear-gradient(90deg, transparent, #ff2a5f, #00d4ff, transparent)" }} />
-        <div style={{ background: "rgba(8,12,22,0.98)", padding: "14px 24px", display: "flex", alignItems: "center", gap: 14 }}>
+        <div style={{ height: 1, background: "var(--hairline)" }} />
+        <div style={{ background: "var(--panel)", padding: "14px 24px", display: "flex", alignItems: "center", gap: 14 }}>
           <div style={{
             width: 40, height: 40, borderRadius: 10, flexShrink: 0,
-            background: "rgba(255,42,95,0.1)", border: "1px solid rgba(255,42,95,0.2)",
+            background: "rgba(255,46,76,0.1)", border: "1px solid rgba(255,46,76,0.2)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <Music2 size={18} color="var(--accent-red)" />
+            <Music2 size={18} color="var(--primary)" />
           </div>
-          <p style={{ fontSize: 13, color: "var(--muted)", fontWeight: 600, margin: 0 }}>
+          <p style={{ fontSize: 13, color: "var(--muted-foreground)", fontWeight: 600, margin: 0 }}>
             Select a song from Home or Search to start listening
           </p>
         </div>
@@ -334,12 +334,12 @@ export default function Player() {
     <div style={{ flexShrink: 0 }}>
       {audioEl}
 
-      {/* Top Border Gradient Line */}
-      <div style={{ height: 1.5, background: "linear-gradient(90deg, transparent, #ff2a5f, #00d4ff, transparent)" }} />
+      {/* Top Hairline Divider */}
+      <div style={{ height: 1, background: "var(--hairline)" }} />
 
-      <div style={{ background: "rgba(8,12,22,0.98)", padding: "8px 24px 14px", position: "relative" }}>
+      <div style={{ background: "#121214", padding: "8px 24px 14px", position: "relative" }}>
 
-        {/* Seek Bar */}
+        {/* Synapz Red Seek Bar */}
         <div
           ref={progressRef}
           className="seek-bar"
@@ -349,15 +349,15 @@ export default function Player() {
           onMouseUp={() => { isDragging.current = false; }}
           onMouseLeave={() => { isDragging.current = false; }}
           style={{
-            position: "relative", height: 5, borderRadius: 3,
-            background: "rgba(255,255,255,0.1)", marginBottom: 8, cursor: "pointer",
+            position: "relative", height: 4, borderRadius: 2,
+            background: "rgba(255,255,255,0.14)", marginBottom: 8, cursor: "pointer",
           }}
         >
           <div style={{
             position: "absolute", top: 0, left: 0, height: "100%",
-            width: `${Math.min(100, Math.max(0, progress))}%`, borderRadius: 3,
-            background: "linear-gradient(90deg, #ff2a5f 0%, #00d4ff 100%)",
-            boxShadow: "0 0 10px rgba(255,42,95,0.8)",
+            width: `${Math.min(100, Math.max(0, progress))}%`, borderRadius: 2,
+            background: "var(--play-gradient)",
+            boxShadow: "0 0 10px rgba(255,46,76,0.8)",
           }} />
           <div className="seek-thumb" style={{ left: `${Math.min(100, Math.max(0, progress))}%` }} />
         </div>
@@ -377,7 +377,7 @@ export default function Player() {
               {isPlaying && (
                 <div style={{
                   position: "absolute", inset: -3, borderRadius: 13,
-                  border: `1.5px solid ${useIframe ? "rgba(255,42,95,0.8)" : "rgba(0,212,255,0.7)"}`,
+                  border: "1.5px solid var(--primary)",
                   animation: "pulse-ring 2s ease-out infinite", pointerEvents: "none",
                 }} />
               )}
@@ -387,7 +387,7 @@ export default function Player() {
               <p style={{ fontWeight: 700, fontSize: 13.5, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: 0 }}>
                 {currentSong.title}
               </p>
-              <p style={{ fontSize: 12, color: "var(--muted)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "2px 0 0" }}>
+              <p style={{ fontSize: 12, color: "var(--muted-foreground)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", margin: "2px 0 0" }}>
                 {currentSong.artist}
               </p>
             </div>
@@ -396,8 +396,8 @@ export default function Player() {
               onClick={() => toggleFavorite(currentSong._id)}
               style={{
                 flexShrink: 0, marginLeft: 4, background: "none", border: "none", padding: 4,
-                color: isFav ? "#ff2a5f" : "var(--muted)",
-                filter: isFav ? "drop-shadow(0 0 6px rgba(255,42,95,0.8))" : "none",
+                color: isFav ? "var(--primary)" : "var(--muted-foreground)",
+                filter: isFav ? "drop-shadow(0 0 6px rgba(255,46,76,0.8))" : "none",
                 transition: "color 0.15s, transform 0.15s", cursor: "pointer",
               }}
               className="ctrl-btn"
@@ -421,7 +421,7 @@ export default function Player() {
                 <RotateCcw size={16} />
               </button>
 
-              {/* Glowing Play/Pause Button */}
+              {/* Synapz Glowing Play/Pause Button */}
               <button onClick={handleTogglePlay} className={`play-btn${isPlaying ? " playing" : ""}`}>
                 {isLoading
                   ? <div style={{ width: 18, height: 18, border: "2.5px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
@@ -451,7 +451,7 @@ export default function Player() {
             {/* Clean Monospace Timestamps Badge */}
             <div style={{
               display: "flex", alignItems: "center", gap: 6,
-              fontSize: 11, color: "var(--muted)", fontVariantNumeric: "tabular-nums",
+              fontSize: 11, color: "var(--muted-foreground)", fontVariantNumeric: "tabular-nums",
               fontWeight: 600, fontFamily: "ui-monospace, monospace",
               background: "rgba(255,255,255,0.04)", padding: "2px 10px", borderRadius: 999,
               border: "1px solid rgba(255,255,255,0.06)",
@@ -467,9 +467,9 @@ export default function Player() {
             <span style={{
               fontSize: 10, fontWeight: 800, letterSpacing: "0.06em", textTransform: "uppercase",
               padding: "2px 8px", borderRadius: 6,
-              background: useIframe ? "rgba(255,42,95,0.12)" : "rgba(0,212,255,0.12)",
-              color: useIframe ? "#ff2a5f" : "#00d4ff",
-              border: `1px solid ${useIframe ? "rgba(255,42,95,0.25)" : "rgba(0,212,255,0.25)"}`,
+              background: "rgba(255,46,76,0.12)",
+              color: "var(--primary)",
+              border: "1px solid rgba(255,46,76,0.25)",
               display: "flex", alignItems: "center", gap: 4,
             }}>
               <Radio size={11} /> {useIframe ? "Cloud Stream" : "HD Stream"}
@@ -479,10 +479,10 @@ export default function Player() {
               {isMuted || volume === 0 ? <VolumeX size={17} /> : <Volume2 size={17} />}
             </button>
 
-            <div style={{ position: "relative", width: 80, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.1)", flexShrink: 0 }}>
+            <div style={{ position: "relative", width: 80, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.14)", flexShrink: 0 }}>
               <div style={{
                 position: "absolute", top: 0, left: 0, height: "100%", borderRadius: 2,
-                background: "linear-gradient(90deg, #ff2a5f, #00d4ff)",
+                background: "var(--play-gradient)",
                 width: `${(isMuted ? 0 : volume) * 100}%`,
                 pointerEvents: "none", transition: "width 0.1s ease",
               }} />

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import SongCard from '../components/SongCard';
-import { Search as SearchIcon, Headphones, Disc, Sparkles, TrendingUp } from 'lucide-react';
+import { Search as SearchIcon, Headphones, Disc, TrendingUp } from 'lucide-react';
 
 const SUGGESTED_TAGS = [
   'Arijit Singh', 'Taylor Swift', 'Bollywood 2024',
@@ -39,22 +39,21 @@ export default function Search() {
     <div>
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-0.03em', display: 'flex', alignItems: 'center', gap: 10, margin: 0 }}>
-          <span style={{ display: 'inline-block', width: 4, height: 22, borderRadius: 2, background: 'linear-gradient(to bottom, #ff2a5f, #00d4ff)' }} />
+        <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', margin: 0 }}>
           Search Tracks
         </h1>
-        <p style={{ color: 'var(--muted)', fontSize: 13, marginTop: 4, margin: '4px 0 0' }}>Find any song, artist, or album</p>
+        <p style={{ color: 'var(--muted-foreground)', fontSize: 14, marginTop: 4 }}>Find any song, artist, or album</p>
       </div>
 
-      {/* Form */}
+      {/* Synapz Search Form */}
       <form onSubmit={handleSearch} style={{
         display: 'flex', alignItems: 'center', gap: 12,
         background: 'var(--panel)',
-        border: '1px solid rgba(255,42,95,0.2)',
-        borderRadius: 16, padding: '12px 16px', marginBottom: 18,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+        border: '1px solid var(--hairline)',
+        borderRadius: 14, padding: '12px 16px', marginBottom: 20,
+        boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
       }}>
-        <SearchIcon size={20} color="var(--accent-red)" style={{ flexShrink: 0 }} />
+        <SearchIcon size={20} color="var(--muted-foreground)" style={{ flexShrink: 0 }} />
         <input
           type="text"
           placeholder="Search songs, artists, albums..."
@@ -66,33 +65,25 @@ export default function Search() {
           }}
         />
         <button type="submit" style={{
-          padding: '9px 22px', borderRadius: 12,
-          background: 'linear-gradient(135deg, #ff2a5f, #0066ff)',
-          color: '#fff', fontWeight: 800, fontSize: 13, border: 'none', cursor: 'pointer',
-          flexShrink: 0, boxShadow: '0 4px 14px rgba(255,42,95,0.4)',
+          padding: '9px 24px', borderRadius: 999,
+          background: 'var(--play-gradient)',
+          color: '#fff', fontWeight: 700, fontSize: 13.5, border: 'none', cursor: 'pointer',
+          flexShrink: 0, boxShadow: '0 6px 18px rgba(255,46,76,0.35)',
         }}>
           Search
         </button>
       </form>
 
-      {/* Quick Search Tag Pills */}
+      {/* Synapz Quick Search Tag Chips */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
-        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          <TrendingUp size={12} color="var(--accent-red)" /> Popular:
+        <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--muted-foreground)', display: 'flex', alignItems: 'center', gap: 4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <TrendingUp size={13} color="var(--primary)" /> Popular:
         </span>
         {SUGGESTED_TAGS.map(tag => (
           <button
             key={tag}
             onClick={() => handleTagClick(tag)}
-            style={{
-              fontSize: 12, fontWeight: 600, color: '#fff',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              padding: '5px 12px', borderRadius: 999,
-              cursor: 'pointer', transition: 'all 0.15s ease',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,42,95,0.4)'; e.currentTarget.style.background = 'rgba(255,42,95,0.1)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+            className="chip"
           >
             {tag}
           </button>
@@ -102,30 +93,22 @@ export default function Search() {
       {/* Loading */}
       {loading && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 36 }}>
-            {[1, 1.4, 0.8, 1.2, 0.9].map((d, i) => (
-              <div key={i} style={{
-                width: 5, borderRadius: 3,
-                background: i % 2 === 0 ? 'linear-gradient(to top, #ff2a5f, #00d4ff)' : 'linear-gradient(to top, #0055cc, #ff0044)',
-                transformOrigin: 'bottom',
-                animation: `eq-bar ${d * 0.5 + 0.4}s ease-in-out infinite alternate`,
-                animationDelay: `${i * 0.08}s`, minHeight: 5,
-              }} />
-            ))}
+          <div className="eq-bar" style={{ height: 36, gap: 4 }}>
+            <span /><span /><span /><span /><span />
           </div>
         </div>
       )}
 
       {/* No results */}
       {!loading && searched && results.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--muted)' }}>
+        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--muted-foreground)' }}>
           <div style={{
             width: 64, height: 64, borderRadius: 20, margin: '0 auto 16px',
-            background: 'rgba(255,42,95,0.1)',
-            border: '1px solid rgba(255,42,95,0.2)',
+            background: 'rgba(255,46,76,0.1)',
+            border: '1px solid rgba(255,46,76,0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Disc size={32} color="var(--accent-red)" />
+            <Disc size={32} color="var(--primary)" />
           </div>
           <p style={{ fontSize: 16, fontWeight: 800, color: '#fff', marginBottom: 6 }}>No results for "{query}"</p>
           <p style={{ fontSize: 13 }}>Try searching for a different song or artist</p>
@@ -136,7 +119,7 @@ export default function Search() {
       {!loading && results.length > 0 && (
         <>
           <div style={{ marginBottom: 16 }}>
-            <p style={{ color: 'var(--muted)', fontSize: 13, fontWeight: 600, margin: 0 }}>
+            <p style={{ color: 'var(--muted-foreground)', fontSize: 13.5, fontWeight: 600, margin: 0 }}>
               Found {results.length} results for "<span style={{ color: '#fff' }}>{query}</span>"
             </p>
           </div>
@@ -153,15 +136,15 @@ export default function Search() {
         <div style={{ textAlign: 'center', padding: '60px 0' }}>
           <div style={{
             width: 72, height: 72, borderRadius: 24, margin: '0 auto 20px',
-            background: 'rgba(0,212,255,0.08)',
-            border: '1px solid rgba(0,212,255,0.2)',
+            background: 'rgba(255,46,76,0.08)',
+            border: '1px solid rgba(255,46,76,0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 30px rgba(0,212,255,0.15)',
+            boxShadow: '0 0 30px rgba(255,46,76,0.15)',
           }}>
-            <Headphones size={36} color="var(--accent)" />
+            <Headphones size={36} color="var(--primary)" />
           </div>
           <p style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 8 }}>What do you want to hear today?</p>
-          <p style={{ fontSize: 13.5, color: 'var(--muted)' }}>Type any song title, artist, or pick a popular search tag above</p>
+          <p style={{ fontSize: 13.5, color: 'var(--muted-foreground)' }}>Type any song title, artist, or pick a popular search tag above</p>
         </div>
       )}
     </div>

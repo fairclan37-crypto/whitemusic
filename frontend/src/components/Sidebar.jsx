@@ -17,32 +17,31 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar-container">
-      {/* Brand */}
-      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 4px 20px', textDecoration: 'none' }}>
+      {/* Synapz Brand */}
+      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 4px 18px', textDecoration: 'none' }}>
         <div style={{
           width: 38, height: 38, borderRadius: 12, flexShrink: 0,
-          background: 'linear-gradient(135deg, #ff2a5f 0%, #0066ff 100%)',
+          background: 'var(--play-gradient)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 20px rgba(255,42,95,0.5)',
+          boxShadow: '0 8px 20px rgba(255,46,76,0.45)',
         }}>
           <Music2 size={20} color="white" />
         </div>
         <span className="brand-name" style={{
           fontSize: 22, fontWeight: 900, letterSpacing: '-0.03em',
-          background: 'linear-gradient(90deg, #ffffff, #00d4ff, #ff2a5f)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          color: '#ffffff',
         }}>
           White Music
         </span>
       </Link>
 
-      {/* Section label */}
+      {/* Menu label */}
       <div className="section-label" style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        margin: '4px 0 8px', padding: '7px 12px',
+        margin: '12px 0 6px', padding: '7px 12px',
         borderRadius: 9,
-        background: 'rgba(255,42,95,0.08)',
-        border: '1px solid rgba(255,42,95,0.15)',
+        background: 'rgba(255, 255, 255, 0.05)',
+        border: '1px solid rgba(255, 255, 255, 0.05)',
         fontSize: 11, fontWeight: 700, letterSpacing: '0.09em',
         textTransform: 'uppercase', color: '#fff',
       }}>
@@ -58,28 +57,26 @@ export default function Sidebar() {
               key={to}
               to={to}
               className={`nav-item${isActive ? ' nav-active' : ''}`}
-              style={{ animation: `slide-right 0.3s ${idx * 0.05}s both` }}
             >
-              {isActive && <span className="nav-active-strip" />}
-              <Icon size={18} color={isActive ? 'var(--accent-red)' : 'currentColor'} style={{ flexShrink: 0 }} />
+              <Icon size={18} color={isActive ? '#ffffff' : 'var(--muted-foreground)'} style={{ flexShrink: 0 }} />
               <span className="nav-label">{label}</span>
             </Link>
           );
         })}
       </nav>
 
-      {/* User Auth Widget */}
+      {/* Synapz User Profile Widget */}
       <div className="user-profile-widget" style={{
         marginTop: 16, paddingTop: 14,
-        borderTop: '1px solid rgba(0,212,255,0.08)',
+        borderTop: '1px solid var(--hairline)',
       }}>
         {user ? (
-          /* Logged In Card */
+          /* Logged In Profile Card */
           <div style={{
             display: 'flex', alignItems: 'center', gap: 10,
             padding: '8px 10px', borderRadius: 12,
-            background: 'rgba(255,42,95,0.08)',
-            border: '1px solid rgba(255,42,95,0.2)',
+            background: 'var(--panel)',
+            border: '1px solid var(--hairline)',
           }}>
             <img
               src={user.avatar}
@@ -87,7 +84,7 @@ export default function Sidebar() {
               style={{
                 width: 34, height: 34, borderRadius: '50%',
                 objectFit: 'cover', flexShrink: 0,
-                border: '1.5px solid var(--accent-red)',
+                border: '1.5px solid var(--primary)',
               }}
               onError={e => { e.target.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=User'; }}
             />
@@ -99,7 +96,7 @@ export default function Sidebar() {
                 {user.name}
               </p>
               <p style={{
-                fontSize: 10.5, color: 'var(--muted)', margin: '2px 0 0',
+                fontSize: 10.5, color: 'var(--muted-foreground)', margin: '2px 0 0',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
                 {user.email}
@@ -109,12 +106,12 @@ export default function Sidebar() {
               onClick={logout}
               title="Sign Out"
               style={{
-                background: 'none', border: 'none', color: 'var(--muted)',
+                background: 'none', border: 'none', color: 'var(--muted-foreground)',
                 cursor: 'pointer', padding: 4, flexShrink: 0,
                 transition: 'color 0.15s, transform 0.15s',
               }}
               onMouseEnter={e => { e.currentTarget.style.color = '#ff4d4d'; e.currentTarget.style.transform = 'scale(1.1)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted)'; e.currentTarget.style.transform = 'scale(1)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--muted-foreground)'; e.currentTarget.style.transform = 'scale(1)'; }}
             >
               <LogOut size={16} />
             </button>
@@ -124,15 +121,15 @@ export default function Sidebar() {
           <button
             onClick={() => setIsAuthModalOpen(true)}
             style={{
-              width: '100%', padding: '10px 12px', borderRadius: 12,
-              background: 'linear-gradient(135deg, rgba(255,42,95,0.15), rgba(0,102,255,0.2))',
-              border: '1px solid rgba(255,42,95,0.25)',
-              color: '#fff', fontWeight: 700, fontSize: 12.5,
+              width: '100%', padding: '10px 12px', borderRadius: 999,
+              background: 'var(--play-gradient)',
+              boxShadow: '0 8px 18px rgba(255,46,76,0.35)',
+              color: '#fff', fontWeight: 700, fontSize: 13,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              cursor: 'pointer', transition: 'background 0.15s, transform 0.15s',
+              cursor: 'pointer', transition: 'transform 0.15s, filter 0.15s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255,42,95,0.25), rgba(0,102,255,0.3))'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255,42,95,0.15), rgba(0,102,255,0.2))'; }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.filter = 'brightness(1.06)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.filter = 'brightness(1)'; }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
