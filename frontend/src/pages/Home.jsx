@@ -33,16 +33,15 @@ export default function Home() {
     );
   }
 
-  const safeSongs = songs || [];
-  const featured  = safeSongs.length > 0 ? safeSongs[0] : null;
+  const featured = songs[0];
 
   const filteredSongs = activeGenre === 'All Hits' 
-    ? safeSongs 
-    : safeSongs.filter(s => 
-        (s?.title || '').toLowerCase().includes(activeGenre.toLowerCase()) || 
-        (s?.artist || '').toLowerCase().includes(activeGenre.toLowerCase())
+    ? songs 
+    : songs.filter(s => 
+        s.title.toLowerCase().includes(activeGenre.toLowerCase()) || 
+        s.artist.toLowerCase().includes(activeGenre.toLowerCase())
       );
-  const displayList = filteredSongs.length > 0 ? filteredSongs : safeSongs;
+  const displayList = filteredSongs.length > 0 ? filteredSongs : songs;
 
   return (
     <div>

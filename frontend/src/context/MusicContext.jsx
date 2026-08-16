@@ -2,46 +2,11 @@ import { createContext, useState, useEffect } from 'react';
 
 export const MusicContext = createContext();
 
-const FALLBACK_SONGS = [
-  {
-    _id: "KeWjF_723Ww",
-    title: "Kesariya - Brahmastra",
-    artist: "Arijit Singh, Pritam",
-    cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop&q=80",
-    audioUrl: "/api/stream/KeWjF_723Ww",
-    duration: "4:28"
-  },
-  {
-    _id: "fJ9rUzIMcZQ",
-    title: "Chaleya - Jawan",
-    artist: "Arijit Singh, Anirudh Ravichander",
-    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&auto=format&fit=crop&q=80",
-    audioUrl: "/api/stream/fJ9rUzIMcZQ",
-    duration: "3:20"
-  },
-  {
-    _id: "YykjpeuMNEk",
-    title: "Heeriye",
-    artist: "Jasleen Royal, Arijit Singh",
-    cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&auto=format&fit=crop&q=80",
-    audioUrl: "/api/stream/YykjpeuMNEk",
-    duration: "3:14"
-  },
-  {
-    _id: "hhuGQUYJtf8",
-    title: "Tum Se Hi - Jab We Met",
-    artist: "Mohit Chauhan, Pritam",
-    cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&auto=format&fit=crop&q=80",
-    audioUrl: "/api/stream/hhuGQUYJtf8",
-    duration: "5:23"
-  }
-];
-
 export function MusicProvider({ children }) {
-  const [songs, setSongs] = useState(FALLBACK_SONGS);
-  const [currentSong, setCurrentSong] = useState(FALLBACK_SONGS[0]);
+  const [songs, setSongs] = useState([]);
+  const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playlist, setPlaylist] = useState(FALLBACK_SONGS);
+  const [playlist, setPlaylist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shuffle, setShuffle] = useState(false);
   const [repeatMode, setRepeatMode] = useState(0); // 0: None, 1: One, 2: All
@@ -70,20 +35,19 @@ export function MusicProvider({ children }) {
     }
   }, [user]);
 
-  // On mount, load default songs from API
+  // On mount, load some default songs
   useEffect(() => {
     const fetchDefaults = async () => {
       try {
         const res = await fetch('/api/search?q=bollywood%20hits');
-        if (!res.ok) throw new Error('Search failed');
         const data = await res.json();
-        if (data.results && Array.isArray(data.results) && data.results.length > 0) {
+        if (data.results && Array.isArray(data.results)) {
           setSongs(data.results);
           setPlaylist(data.results);
-          setCurrentSong(data.results[0]);
+          if (data.results.length > 0) setCurrentSong(data.results[0]);
         }
       } catch (e) {
-        console.warn('Default API fetch fallback to static songs:', e);
+        console.error('Default fetch failed:', e);
       } finally {
         setLoading(false);
       }

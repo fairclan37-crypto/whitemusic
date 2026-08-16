@@ -1,4 +1,4 @@
-import { useState, Component } from 'react';
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { MusicProvider } from './context/MusicContext';
 import LoadingScreen from './components/LoadingScreen';
@@ -13,51 +13,15 @@ import Bollywood from './pages/Bollywood';
 import Hollywood from './pages/Hollywood';
 import Library from './pages/Library';
 
-class ErrorBoundary extends Component {
-  state = { hasError: false };
+function App() {
+  const [loading, setLoading] = useState(true);
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
+  if (loading) {
+    return <LoadingScreen onComplete={() => setLoading(false)} />;
   }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('App ErrorBoundary caught error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{
-          height: '100vh', width: '100vw', background: '#06080f', color: '#fff',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          gap: 16, textAlign: 'center', padding: 20
-        }}>
-          <h2 style={{ fontSize: 24, fontWeight: 900, color: '#ff2a5f', margin: 0 }}>White Music</h2>
-          <p style={{ fontSize: 14, color: '#8a9fbe', margin: 0 }}>Something went wrong while loading streams.</p>
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-              padding: '10px 24px', borderRadius: 999,
-              background: 'linear-gradient(135deg, #ff2a5f, #0066ff)',
-              color: '#fff', fontWeight: 700, fontSize: 13, border: 'none', cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(255,42,95,0.4)',
-            }}
-          >
-            Reload App
-          </button>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-
-function AppContent() {
-  const [showLoading, setShowLoading] = useState(true);
 
   return (
-    <>
-      {showLoading && <LoadingScreen onComplete={() => setShowLoading(false)} />}
+    <MusicProvider>
       <BrowserRouter>
         {/* Starfield wallpaper wrapper */}
         <div className="wallpaper">
@@ -87,17 +51,7 @@ function AppContent() {
           </div>
         </div>
       </BrowserRouter>
-    </>
-  );
-}
-
-function App() {
-  return (
-    <ErrorBoundary>
-      <MusicProvider>
-        <AppContent />
-      </MusicProvider>
-    </ErrorBoundary>
+    </MusicProvider>
   );
 }
 
