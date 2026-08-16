@@ -2,14 +2,13 @@
   "version": 2,
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
-  "installCommand": "cd backend && npm install",
-  "framework": null,
-  "functions": {
-    "api/index.ts": {
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index" }
-  ]
+    { "source": "/api/search", "destination": "/api/search" },
+    { "source": "/api/stream/:videoId", "destination": "/api/stream/[videoId]" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/search.js": { "memory": 512, "maxDuration": 30 },
+    "api/stream/[videoId].js": { "memory": 256, "maxDuration": 10 }
+  }
 }
