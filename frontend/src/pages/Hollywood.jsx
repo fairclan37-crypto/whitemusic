@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import SongCard from '../components/SongCard';
+import { Globe, Sparkles } from 'lucide-react';
 
 export default function Hollywood() {
   const [songs,   setSongs]   = useState([]);
@@ -17,19 +18,20 @@ export default function Hollywood() {
     <div>
       <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:24 }}>
         <div>
-          <p style={{ fontSize:12, color:'#7a90b0', fontWeight:600, marginBottom:4, letterSpacing:'0.05em', textTransform:'uppercase' }}>Category</p>
+          <p style={{ fontSize:12, color:'var(--accent)', fontWeight:700, marginBottom:4, letterSpacing:'0.08em', textTransform:'uppercase' }}>Category</p>
           <h1 style={{ fontSize:28, fontWeight:900, letterSpacing:'-0.03em', display:'flex', alignItems:'center', gap:10, margin:0 }}>
-            <span style={{ display:'inline-block', width:4, height:24, borderRadius:2, background:'linear-gradient(to bottom, #00d4ff, #0055cc)', flexShrink:0 }}/>
-            🇺🇸 Hollywood Hits
+            <span style={{ display:'inline-block', width:4, height:24, borderRadius:2, background:'linear-gradient(to bottom, #00d4ff, #ff2a5f)', flexShrink:0 }}/>
+            <Globe size={26} color="var(--accent)" /> Hollywood Hits
           </h1>
-          <p style={{ color:'#7a90b0', fontSize:13, marginTop:4 }}>International chartbusters & Billboard hits</p>
+          <p style={{ color:'var(--muted)', fontSize:13, marginTop:4 }}>International chartbusters & Billboard hits</p>
         </div>
         <span style={{
-          fontSize:11, fontWeight:700, color:'#7a90b0',
+          fontSize:11, fontWeight:700, color:'var(--muted)',
           background:'rgba(255,255,255,0.04)', padding:'4px 12px',
-          borderRadius:8, border:'1px solid rgba(0,212,255,0.08)',
+          borderRadius:8, border:'1px solid rgba(0,212,255,0.15)',
+          display:'flex', alignItems:'center', gap:6
         }}>
-          {songs.length} Tracks
+          <Sparkles size={13} color="var(--accent)" /> {songs.length} Tracks
         </span>
       </div>
 
@@ -39,7 +41,7 @@ export default function Hollywood() {
             {[0.9,1.3,1.0,1.2,0.8].map((d,i) => (
               <div key={i} style={{
                 width:5, borderRadius:3,
-                background:'linear-gradient(to top, #0055cc, #00d4ff)',
+                background: i % 2 === 0 ? 'linear-gradient(to top, #0055cc, #00d4ff)' : 'linear-gradient(to top, #ff2a5f, #ff0044)',
                 transformOrigin:'bottom',
                 animation:`eq-bar ${d*0.6+0.4}s ease-in-out infinite alternate`,
                 animationDelay:`${i*0.07}s`, minHeight:5,

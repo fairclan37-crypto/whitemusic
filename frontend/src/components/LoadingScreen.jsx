@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
+import { Music2, Headphones, Zap, Sparkles } from 'lucide-react';
 
 export default function LoadingScreen({ onComplete }) {
-  const [phase, setPhase]       = useState(0); // 0=logo, 1=bars, 2=done
+  const [phase, setPhase]       = useState(0);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Phase 0 → 1 after 600 ms
     const t1 = setTimeout(() => setPhase(1), 600);
-
-    // Progress bar fill
     const t2 = setTimeout(() => {
       const iv = setInterval(() => {
         setProgress(p => {
@@ -18,9 +16,9 @@ export default function LoadingScreen({ onComplete }) {
             setTimeout(onComplete, 500);
             return 100;
           }
-          return p + 1.8;
+          return p + 2.2;
         });
-      }, 28);
+      }, 25);
       return () => clearInterval(iv);
     }, 800);
 
@@ -31,7 +29,7 @@ export default function LoadingScreen({ onComplete }) {
     <div
       style={{
         position: 'fixed', inset: 0, zIndex: 9999,
-        background: '#080c14',
+        background: '#05070d',
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
         gap: 0,
@@ -43,8 +41,8 @@ export default function LoadingScreen({ onComplete }) {
       {/* Ambient glows */}
       <div style={{
         position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)',
-        width: 400, height: 400, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(0,212,255,0.15) 0%, transparent 70%)',
+        width: 450, height: 450, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(255,42,95,0.15) 0%, rgba(0,212,255,0.1) 50%, transparent 70%)',
         pointerEvents: 'none',
         animation: 'floatGlow 3s ease-in-out infinite',
       }} />
@@ -57,17 +55,12 @@ export default function LoadingScreen({ onComplete }) {
         {/* Icon */}
         <div style={{
           width: 68, height: 68, borderRadius: 20,
-          background: 'linear-gradient(135deg, #00d4ff 0%, #0055cc 100%)',
+          background: 'linear-gradient(135deg, #ff2a5f 0%, #0066ff 100%)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 40px rgba(0,212,255,0.5), 0 0 80px rgba(0,212,255,0.2)',
+          boxShadow: '0 0 40px rgba(255,42,95,0.5), 0 0 80px rgba(0,212,255,0.25)',
           animation: 'float 3s ease-in-out infinite',
         }}>
-          {/* Music note SVG */}
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 18V5l12-2v13" />
-            <circle cx="6" cy="18" r="3" />
-            <circle cx="18" cy="16" r="3" />
-          </svg>
+          <Music2 size={36} color="white" />
         </div>
 
         {/* Name */}
@@ -75,7 +68,7 @@ export default function LoadingScreen({ onComplete }) {
           <div style={{
             fontSize: 52, fontWeight: 900, letterSpacing: '-0.03em',
             fontFamily: "'Figtree', sans-serif",
-            background: 'linear-gradient(90deg, #00d4ff, #0ea5e9, #ffffff)',
+            background: 'linear-gradient(90deg, #ffffff, #00d4ff, #ff2a5f)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             lineHeight: 1,
           }}>
@@ -83,7 +76,7 @@ export default function LoadingScreen({ onComplete }) {
           </div>
           <div style={{
             fontSize: 13, fontWeight: 600, letterSpacing: '0.2em',
-            color: 'rgba(0,212,255,0.6)', textTransform: 'uppercase',
+            color: 'rgba(255,42,95,0.8)', textTransform: 'uppercase',
             marginTop: 6,
           }}>
             Your Vibe. Your Sound.
@@ -101,8 +94,8 @@ export default function LoadingScreen({ onComplete }) {
           <div key={i} style={{
             width: 6, borderRadius: 3,
             background: i % 2 === 0
-              ? 'linear-gradient(to top, #0055cc, #00d4ff)'
-              : 'linear-gradient(to top, #0077ee, #33ddff)',
+              ? 'linear-gradient(to top, #ff2a5f, #ff0044)'
+              : 'linear-gradient(to top, #0066ff, #00d4ff)',
             transformOrigin: 'bottom',
             animation: `eqLoad ${d * 0.6 + 0.5}s ease-in-out infinite alternate`,
             animationDelay: `${i * 0.06}s`,
@@ -120,27 +113,27 @@ export default function LoadingScreen({ onComplete }) {
         }}>
           <div style={{
             height: '100%', borderRadius: 2,
-            background: 'linear-gradient(90deg, #00d4ff, #0055cc)',
+            background: 'linear-gradient(90deg, #ff2a5f, #00d4ff)',
             width: `${progress}%`,
             transition: 'width 0.08s linear',
-            boxShadow: '0 0 12px rgba(0,212,255,0.8)',
+            boxShadow: '0 0 12px rgba(255,42,95,0.8)',
           }} />
         </div>
       </div>
 
-      {/* Status text */}
-      <p style={{
+      {/* Status text with Lucide icons */}
+      <div style={{
         fontFamily: "'Figtree', sans-serif",
         fontSize: 13, fontWeight: 600,
-        color: 'rgba(122,144,176,1)',
+        color: '#8a9fbe',
         letterSpacing: '0.06em',
-        transition: 'opacity 0.3s',
+        display: 'flex', alignItems: 'center', gap: 8,
       }}>
-        {progress < 30  && '🎵 Initializing...'}
-        {progress >= 30 && progress < 65  && '🎧 Loading tracks...'}
-        {progress >= 65 && progress < 95  && '🔥 Almost ready...'}
-        {progress >= 95 && '✨ Welcome!'}
-      </p>
+        {progress < 30 && <><Music2 size={15} color="var(--accent)" /> Initializing...</>}
+        {progress >= 30 && progress < 65 && <><Headphones size={15} color="var(--accent-red)" /> Loading tracks...</>}
+        {progress >= 65 && progress < 95 && <><Zap size={15} color="var(--accent)" /> Almost ready...</>}
+        {progress >= 95 && <><Sparkles size={15} color="var(--accent-red)" /> Welcome!</>}
+      </div>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@900&display=swap');
