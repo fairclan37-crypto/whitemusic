@@ -1,4 +1,4 @@
-﻿// Vercel Serverless Function: /api/search
+// Vercel Serverless Function: /api/search
 const yts = require('yt-search');
 
 module.exports = async function handler(req, res) {
@@ -11,13 +11,14 @@ module.exports = async function handler(req, res) {
     if (!query) return res.status(400).json({ error: 'Missing query' });
 
     const results = await yts(query);
-    const videos = results.videos.slice(0, 15).map(item => ({
+    const videos = results.videos.slice(0, 20).map(item => ({
       _id: item.videoId,
       title: item.title,
       artist: item.author?.name || 'Unknown Artist',
-      cover: item.thumbnail || 'https://picsum.photos/seed/music/300/300',
+      cover: item.thumbnail || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=80',
       audioUrl: `/api/stream/${item.videoId}`,
       duration: item.duration?.timestamp || '0:00',
+      durationSeconds: item.seconds || 0,
     }));
 
     res.status(200).json({ results: videos });
