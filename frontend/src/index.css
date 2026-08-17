@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── White Music Theme Tokens (Pure White + Crimson Red Aesthetics) ── */
+/* ── White Music High Performance Theme (60FPS Light-Weight CSS) ── */
 :root {
   --foreground:          #ffffff;
   --muted-foreground:    #a0a0a8;
@@ -15,23 +15,23 @@
   --primary-foreground:  #ffffff;
 
   --play-gradient:       linear-gradient(135deg, #ff3b4e 0%, #b00d22 100%);
-  --glow:                rgba(255, 46, 76, 0.4);
+  --glow:                rgba(255, 46, 76, 0.3);
 
-  --window:              #111114;
-  --panel:               #16161a;
-  --panel-strong:        #202026;
-  --panel-hover:         #282830;
+  --window:              #121215;
+  --panel:               #17171c;
+  --panel-strong:        #212128;
+  --panel-hover:         #282832;
   --hairline:            rgba(255, 255, 255, 0.08);
 
   --background:          #08080a;
-  --card:                #16161a;
+  --card:                #17171c;
   --accent:              #ff2e4c;
 
   --border:              rgba(255, 255, 255, 0.08);
   --muted:               #a0a0a8;
 }
 
-/* ── Reset & Global Smoothness ── */
+/* ── Reset & Hardware Accelerated Base ── */
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; padding: 0; }
 
@@ -40,7 +40,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizeSpeed;
   overflow: hidden;
   user-select: none;
 }
@@ -51,10 +51,10 @@ button {
   cursor: pointer;
   border: none;
   background: none;
-  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.1s ease, opacity 0.1s ease, background 0.1s ease;
 }
 button:active {
-  transform: scale(0.95) !important;
+  transform: scale(0.96) !important;
 }
 
 img { display: block; }
@@ -62,33 +62,31 @@ input { font-family: inherit; }
 
 ::selection { background: rgba(255, 46, 76, 0.4); }
 
-/* ── Ultra Smooth Custom Scrollbar ── */
+/* ── Fast Native Scrollbars (No GPU overhead) ── */
 *::-webkit-scrollbar { width: 6px; height: 6px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 6px;
-  transition: background 0.2s ease;
 }
 *::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 46, 76, 0.6);
 }
 
-/* ── Smooth Ambient Wallpaper ── */
+/* ── Clean Ambient Wallpaper ── */
 .wallpaper {
   height: 100dvh;
   width: 100vw;
   padding: 16px;
   display: grid;
   place-items: stretch;
-  background: radial-gradient(1000px 600px at 80% -10%, rgba(255, 46, 76, 0.18), transparent 60%),
-              radial-gradient(800px 500px at -10% 110%, rgba(176, 13, 34, 0.18), transparent 60%),
+  background: radial-gradient(800px 500px at 85% 0%, rgba(255, 46, 76, 0.12), transparent 70%),
               #08080a;
   overflow: hidden;
   position: relative;
 }
 
-/* ── App Window Container ── */
+/* ── App Window (Solid background for maximum FPS, zero lag) ── */
 .app-window {
   position: relative;
   z-index: 1;
@@ -96,37 +94,23 @@ input { font-family: inherit; }
   width: 100%;
   max-width: 1520px;
   margin: 0 auto;
-  border-radius: 24px;
+  border-radius: 20px;
   background: var(--window);
-  backdrop-filter: blur(40px) saturate(135%);
-  -webkit-backdrop-filter: blur(40px) saturate(135%);
   border: 1px solid var(--hairline);
-  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-/* ── Main View Fade-In Transition ── */
+/* ── Main View (Fast Native Scroll) ── */
 .main-scroll-area {
   flex: 1;
   overflow-y: auto;
   padding: 20px 28px 24px;
-  animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ── Sidebar Styling & Smooth Inputs ── */
+/* ── Sidebar ── */
 .sidebar-container {
   width: 244px;
   flex-shrink: 0;
@@ -134,7 +118,7 @@ input { font-family: inherit; }
   flex-direction: column;
   padding: 18px 16px 20px;
   border-right: 1px solid var(--hairline);
-  background: rgba(0, 0, 0, 0.2);
+  background: #0f0f12;
   height: 100%;
   min-height: 0;
 }
@@ -144,16 +128,13 @@ input { font-family: inherit; }
   align-items: center;
   gap: 10px;
   padding: 9px 12px;
-  border-radius: 12px;
+  border-radius: 10px;
   background: var(--panel);
   border: 1px solid var(--hairline);
   color: var(--muted-foreground);
-  transition: border-color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s ease;
 }
 .sidebar-search:focus-within {
   border-color: rgba(255, 46, 76, 0.5);
-  box-shadow: 0 0 0 3px rgba(255, 46, 76, 0.15);
-  background: var(--panel-strong);
 }
 .sidebar-search input {
   flex: 1;
@@ -167,27 +148,25 @@ input { font-family: inherit; }
 }
 .sidebar-search input::placeholder {
   color: var(--muted-foreground);
-  opacity: 0.8;
 }
 
-/* ── Smooth Navigation Items ── */
+/* ── Fast Navigation Items ── */
 .nav-item {
   position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 10px;
   text-decoration: none;
   color: var(--muted-foreground);
   font-size: 14px;
   font-weight: 600;
-  transition: color 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.15s ease;
+  transition: color 0.1s ease, background 0.1s ease;
 }
 .nav-item:hover {
   color: #ffffff;
   background: var(--panel);
-  transform: translateX(2px);
 }
 .nav-item.nav-active {
   color: #ffffff;
@@ -200,97 +179,75 @@ input { font-family: inherit; }
   top: 50%;
   transform: translateY(-50%);
   width: 4px;
-  height: 22px;
+  height: 20px;
   border-radius: 0 4px 4px 0;
   background: var(--play-gradient);
-  box-shadow: 0 0 12px rgba(255, 46, 76, 0.8);
-  animation: pulseStrip 2s ease-in-out infinite alternate;
 }
 
-@keyframes pulseStrip {
-  0% { box-shadow: 0 0 8px rgba(255, 46, 76, 0.6); }
-  100% { box-shadow: 0 0 16px rgba(255, 46, 76, 1); }
-}
-
-/* ── Smooth Song Cards with Zoom Effect ── */
+/* ── High-Performance Fast Song Cards ── */
 .song-card {
   background: var(--panel);
   border: 1px solid var(--hairline);
-  border-radius: 16px;
+  border-radius: 14px;
   padding: 12px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: background 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.22s ease, box-shadow 0.22s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+  will-change: transform;
 }
 .song-card:hover {
   background: var(--panel-strong);
-  transform: translateY(-4px) scale(1.01);
-  border-color: rgba(255, 46, 76, 0.5);
-  box-shadow: 0 12px 32px rgba(255, 46, 76, 0.2);
+  border-color: rgba(255, 46, 76, 0.4);
+  transform: translateY(-2px);
 }
 .song-card.active {
   background: var(--panel-strong);
-  border-color: rgba(255, 46, 76, 0.7);
+  border-color: rgba(255, 46, 76, 0.6);
 }
 
 .song-card .cover-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.song-card:hover .cover-img {
-  transform: scale(1.06);
 }
 
 .song-card .card-overlay {
   position: absolute; inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(2px);
+  background: rgba(0, 0, 0, 0.4);
   display: flex; align-items: center; justify-content: center;
   opacity: 0;
-  transition: opacity 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 0.15s ease;
 }
 .song-card:hover .card-overlay,
 .song-card.active .card-overlay { opacity: 1; }
 
 .song-card .card-play-btn {
-  width: 46px; height: 46px; border-radius: 50%;
+  width: 44px; height: 44px; border-radius: 50%;
   background: var(--play-gradient);
   color: #fff;
   display: grid; place-items: center;
-  box-shadow: 0 8px 20px rgba(255, 46, 76, 0.5);
-  transform: translateY(8px) scale(0.9);
-  opacity: 0;
-  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.22s ease;
+  box-shadow: 0 6px 16px rgba(255, 46, 76, 0.4);
+  transition: transform 0.1s ease;
 }
-.song-card:hover .card-play-btn,
-.song-card.active .card-play-btn {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
+.song-card:hover .card-play-btn { transform: scale(1.05); }
 
 .fav-btn {
   position: absolute; top: 8px; right: 8px;
   width: 28px; height: 28px; border-radius: 50%;
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.15s ease;
   cursor: pointer;
   z-index: 2;
+  transition: transform 0.1s ease;
 }
-.fav-btn:hover {
-  transform: scale(1.15);
-  background: rgba(0, 0, 0, 0.8);
-}
+.fav-btn:hover { transform: scale(1.1); }
 
-/* ── Smooth Category Chips ── */
+/* ── Category Chips ── */
 .chip {
   flex: 0 0 auto;
-  padding: 8px 18px;
+  padding: 7px 16px;
   border-radius: 999px;
   background: var(--panel);
   border: 1px solid var(--hairline);
@@ -298,50 +255,38 @@ input { font-family: inherit; }
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.18s ease;
+  transition: background 0.1s ease, border-color 0.1s ease;
 }
 .chip:hover {
   background: var(--panel-strong);
-  border-color: rgba(255, 46, 76, 0.5);
-  transform: translateY(-1px);
+  border-color: rgba(255, 46, 76, 0.4);
 }
 .chip.active {
   background: var(--play-gradient);
   border-color: transparent;
-  box-shadow: 0 6px 20px rgba(255, 46, 76, 0.4);
 }
 
-/* ── Smooth Control Buttons ── */
+/* ── Player Controls ── */
 .ctrl-btn {
   color: var(--muted-foreground);
-  transition: color 0.18s ease, transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: color 0.1s ease;
   cursor: pointer;
 }
-.ctrl-btn:hover {
-  color: #ffffff;
-  transform: scale(1.14);
-}
-.ctrl-btn.active {
-  color: var(--primary);
-  filter: drop-shadow(0 0 6px rgba(255, 46, 76, 0.7));
-}
+.ctrl-btn:hover { color: #ffffff; }
+.ctrl-btn.active { color: var(--primary); }
 
 .seek-bar { cursor: pointer; }
 .seek-bar .seek-thumb {
   position: absolute; top: 50%; transform: translate(-50%, -50%);
   width: 12px; height: 12px; border-radius: 50%;
   background: #fff;
-  box-shadow: 0 0 8px rgba(255, 46, 76, 0.9);
   opacity: 0;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition: opacity 0.1s ease;
   pointer-events: none;
 }
-.seek-bar:hover .seek-thumb {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1.15);
-}
+.seek-bar:hover .seek-thumb { opacity: 1; }
 
-/* ── Smooth EQ Bars ── */
+/* ── EQ Bars ── */
 .eq-bar {
   display: inline-flex;
   align-items: flex-end;
