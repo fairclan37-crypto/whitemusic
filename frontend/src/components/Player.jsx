@@ -1,7 +1,7 @@
 import { useContext, useRef, useState, useEffect, useCallback } from "react";
 import { MusicContext } from "../context/MusicContext";
 import {
-  Play, Pause, SkipForward, SkipBack, RotateCcw, RotateCw,
+  Play, Pause, SkipForward, SkipBack,
   Volume2, VolumeX, Shuffle, Repeat, Repeat1, Heart, Music2, Radio,
   Mic2, ListMusic, SlidersHorizontal, Maximize2
 } from "lucide-react";
@@ -79,7 +79,7 @@ export default function Player() {
         setDuration(prevDur => Math.max(prevDur, elapsed));
         const maxD = Math.max(duration, elapsed, 1);
         setProgress(Math.min(100, (elapsed / maxD) * 100));
-      }, 400);
+      }, 300);
     } else {
       clearInterval(iframeTimerRef.current);
       iframeElapsed.current += (Date.now() - iframeStartRef.current) / 1000;
@@ -204,7 +204,7 @@ export default function Player() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSong?._id]);
 
-  // ── TOGGLE PLAY/PAUSE (SAFE & INSTANT) ────────────────────────────────
+  // ── TOGGLE PLAY/PAUSE ──────────────────────────────────────────────────
   const handleTogglePlay = () => {
     if (useIframe) {
       const nextState = !isPlaying;
@@ -308,16 +308,17 @@ export default function Player() {
   );
 
   return (
-    <div style={{ flexShrink: 0, padding: "0 28px 18px", position: "relative" }}>
+    <div style={{ flexShrink: 0, padding: "0 24px 16px", position: "relative" }}>
       {audioEl}
 
-      {/* Synapz Floating Pill Container */}
+      {/* Floating Pill Player Container */}
       <div style={{
         background: "var(--panel)",
         border: "1px solid var(--hairline)",
         borderRadius: 20,
-        padding: "12px 24px",
+        padding: "12px 22px",
         boxShadow: "0 12px 36px rgba(0,0,0,0.5)",
+        transition: "box-shadow 0.2s ease, border-color 0.2s ease",
       }}>
 
         {/* Top Control Row */}
@@ -330,7 +331,11 @@ export default function Player() {
                 <img
                   src={currentSong.cover}
                   alt={currentSong.title}
-                  style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }}
+                  style={{
+                    width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0,
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+                    transition: "transform 0.2s ease",
+                  }}
                   onError={e => { e.target.src = "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&auto=format&fit=crop&q=80"; }}
                 />
                 <div style={{ minWidth: 0 }}>
@@ -344,7 +349,7 @@ export default function Player() {
               </div>
             ) : null}
 
-            <div style={{ display: "flex", alignItems: "center", gap: 14, flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
               <button
                 onClick={() => currentSong && toggleFavorite(currentSong._id)}
                 className="ctrl-btn"
@@ -360,7 +365,7 @@ export default function Player() {
             </div>
           </div>
 
-          {/* Center Transport Controls (Synapz White Play Button) */}
+          {/* Center Transport Controls */}
           <div style={{ display: "flex", alignItems: "center", gap: 18, justifyContent: "center" }}>
             <button
               onClick={() => setRepeatMode((repeatMode + 1) % 3)}
@@ -374,7 +379,7 @@ export default function Player() {
               <SkipBack size={18} />
             </button>
 
-            {/* Synapz White Circular Play/Pause Button */}
+            {/* White Circular Play/Pause Button */}
             <button
               onClick={handleTogglePlay}
               disabled={!currentSong}
@@ -384,11 +389,11 @@ export default function Player() {
                 border: "none", cursor: currentSong ? "pointer" : "default",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 boxShadow: "0 6px 18px rgba(0,0,0,0.4)",
-                transition: "transform 0.12s ease",
+                transition: "transform 0.15s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.15s ease",
                 opacity: currentSong ? 1 : 0.5,
               }}
-              onMouseEnter={e => { if (currentSong) e.currentTarget.style.transform = "scale(1.06)"; }}
-              onMouseLeave={e => { if (currentSong) e.currentTarget.style.transform = "scale(1)"; }}
+              onMouseEnter={e => { if (currentSong) { e.currentTarget.style.transform = "scale(1.08)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(255,255,255,0.4)"; } }}
+              onMouseLeave={e => { if (currentSong) { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,0,0,0.4)"; } }}
             >
               {isLoading ? (
                 <div style={{ width: 18, height: 18, border: "2.5px solid rgba(0,0,0,0.2)", borderTopColor: "#000", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
@@ -419,7 +424,7 @@ export default function Player() {
                 position: "absolute", top: 0, left: 0, height: "100%", borderRadius: 2,
                 background: "var(--primary)",
                 width: `${(isMuted ? 0 : volume) * 100}%`,
-                pointerEvents: "none", transition: "width 0.1s ease",
+                pointerEvents: "none", transition: "width 0.1s linear",
               }} />
               <input
                 type="range" min="0" max="1" step="0.01"
@@ -432,9 +437,9 @@ export default function Player() {
 
         </div>
 
-        {/* Bottom Red Progress Seek Bar with Monospace Timestamps */}
+        {/* Bottom Red Progress Seek Bar */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-          <span style={{ fontSize: 11, color: "var(--muted-foreground)", fontVariantNumeric: "tabular-nums", minWidth: 34, textAlign: "center" }}>
+          <span style={{ fontSize: 11, color: "var(--muted-foreground)", fontVariantNumeric: "tabular-nums", minWidth: 34, textAlign: "center", fontFamily: "ui-monospace, monospace" }}>
             {fmt(currentTime)}
           </span>
 
@@ -455,11 +460,12 @@ export default function Player() {
               position: "absolute", top: 0, left: 0, height: "100%",
               width: `${Math.min(100, Math.max(0, progress))}%`, borderRadius: 2,
               background: "var(--primary)",
+              transition: isDragging.current ? "none" : "width 0.1s linear",
             }} />
             <div className="seek-thumb" style={{ left: `${Math.min(100, Math.max(0, progress))}%` }} />
           </div>
 
-          <span style={{ fontSize: 11, color: "var(--muted-foreground)", fontVariantNumeric: "tabular-nums", minWidth: 34, textAlign: "center" }}>
+          <span style={{ fontSize: 11, color: "var(--muted-foreground)", fontVariantNumeric: "tabular-nums", minWidth: 34, textAlign: "center", fontFamily: "ui-monospace, monospace" }}>
             {fmt(duration)}
           </span>
         </div>
