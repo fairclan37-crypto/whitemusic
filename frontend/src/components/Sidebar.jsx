@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home as HomeIcon, Search, Film, Mic2, Radio, Plus,
-  Download, LogIn, ChevronLeft, Music2, Clapperboard, LogOut
+  Download, LogIn, Music2, Clapperboard, LogOut
 } from 'lucide-react';
 import { MusicContext } from '../context/MusicContext';
 
@@ -29,38 +29,26 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar-container">
-      {/* Synapz Brand Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 4px 16px' }}>
+      {/* Brand Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 4px 18px' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <div style={{
-            width: 32, height: 32, borderRadius: 10, flexShrink: 0,
+            width: 34, height: 34, borderRadius: 10, flexShrink: 0,
             background: 'var(--play-gradient)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 6px 16px rgba(255,46,76,0.5)',
+            boxShadow: '0 6px 16px rgba(255,46,76,0.45)',
           }}>
             <Music2 size={18} color="white" />
           </div>
-          <span style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.02em', color: '#ffffff' }}>
-            Synapz
+          <span style={{ fontSize: 20, fontWeight: 900, letterSpacing: '-0.02em', color: '#ffffff' }}>
+            White Music
           </span>
         </Link>
-
-        <button
-          style={{
-            width: 26, height: 26, borderRadius: '50%',
-            background: 'var(--panel)', border: '1px solid var(--hairline)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'var(--muted-foreground)', cursor: 'pointer',
-          }}
-          title="Collapse Sidebar"
-        >
-          <ChevronLeft size={16} />
-        </button>
       </div>
 
-      {/* Sidebar Search Bar */}
-      <form onSubmit={handleSearchSubmit} className="search" style={{ margin: '4px 0 16px' }}>
-        <Search size={16} color="var(--muted-foreground)" style={{ flexShrink: 0 }} />
+      {/* Sidebar Search Input Box */}
+      <form onSubmit={handleSearchSubmit} className="sidebar-search" style={{ marginBottom: 18 }}>
+        <Search size={15} color="var(--muted-foreground)" style={{ flexShrink: 0 }} />
         <input
           type="text"
           placeholder="Search or paste a link..."
@@ -69,45 +57,64 @@ export default function Sidebar() {
         />
       </form>
 
-      {/* MENU Section Header with Count 5 Badge */}
-      <div className="menu-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* MENU Section Header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '6px 10px', borderRadius: 8,
+        background: 'rgba(255, 255, 255, 0.04)',
+        border: '1px solid rgba(255, 255, 255, 0.05)',
+        fontSize: 11, fontWeight: 800, letterSpacing: '0.08em',
+        color: '#ffffff', textTransform: 'uppercase', marginBottom: 8,
+      }}>
         <span>MENU</span>
-        <span className="menu-label__n">5</span>
+        <span style={{
+          background: 'rgba(255,255,255,0.15)', padding: '1px 6px',
+          borderRadius: 999, fontSize: 10, fontWeight: 800, color: '#fff',
+        }}>
+          5
+        </span>
       </div>
 
       {/* Nav items */}
-      <nav className="nav">
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {menuItems.map(({ to, label, icon: Icon }) => {
           const isActive = location.pathname === to;
           return (
             <Link
               key={to}
               to={to}
-              className={`navitem${isActive ? ' active' : ''}`}
+              className={`nav-item${isActive ? ' nav-active' : ''}`}
             >
               <Icon size={18} color={isActive ? '#ffffff' : 'var(--muted-foreground)'} style={{ flexShrink: 0 }} />
-              <span className="navitem__label">{label}</span>
+              <span>{label}</span>
             </Link>
           );
         })}
       </nav>
 
-      {/* PLAYLISTS Section */}
-      <div className="menu-label" style={{ marginTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* PLAYLISTS Section Header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '6px 10px', borderRadius: 8,
+        background: 'rgba(255, 255, 255, 0.04)',
+        border: '1px solid rgba(255, 255, 255, 0.05)',
+        fontSize: 11, fontWeight: 800, letterSpacing: '0.08em',
+        color: '#ffffff', textTransform: 'uppercase', marginTop: 18, marginBottom: 8,
+      }}>
         <span>PLAYLISTS</span>
         <button
           onClick={() => navigate('/library')}
           style={{ background: 'none', border: 'none', color: 'var(--muted-foreground)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
           title="Create Playlist"
         >
-          <Plus size={16} />
+          <Plus size={15} />
         </button>
       </div>
 
       {/* Spacer */}
       <div style={{ flex: 1, minHeight: 16 }} />
 
-      {/* Get Desktop App Pill */}
+      {/* Desktop App Button */}
       <button
         style={{
           width: '100%', padding: '9px 12px', borderRadius: 12,
@@ -119,10 +126,10 @@ export default function Sidebar() {
         onMouseEnter={e => e.currentTarget.style.color = '#fff'}
         onMouseLeave={e => e.currentTarget.style.color = 'var(--muted-foreground)'}
       >
-        <Download size={15} /> Get the desktop app
+        <Download size={14} /> Get the desktop app
       </button>
 
-      {/* Bottom User Auth Sign In / Sign Up Button */}
+      {/* User Auth Section */}
       {user ? (
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
@@ -139,7 +146,7 @@ export default function Sidebar() {
             onError={e => { e.target.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=User'; }}
           />
           <div style={{ minWidth: 0, flex: 1 }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <p style={{ fontSize: 12.5, fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {user.name}
             </p>
             <p style={{ fontSize: 10.5, color: 'var(--muted-foreground)', margin: '1px 0 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -147,24 +154,24 @@ export default function Sidebar() {
             </p>
           </div>
           <button onClick={logout} title="Sign Out" style={{ background: 'none', border: 'none', color: 'var(--muted-foreground)', cursor: 'pointer', padding: 4 }}>
-            <LogOut size={16} />
+            <LogOut size={15} />
           </button>
         </div>
       ) : (
         <button
           onClick={() => setIsAuthModalOpen(true)}
           style={{
-            width: '100%', padding: '11px 16px', borderRadius: 999,
+            width: '100%', padding: '10px 14px', borderRadius: 999,
             background: 'var(--play-gradient)',
-            boxShadow: '0 8px 24px rgba(255,46,76,0.45)',
-            color: '#ffffff', fontWeight: 800, fontSize: 13.5,
+            boxShadow: '0 6px 20px rgba(255,46,76,0.35)',
+            color: '#ffffff', fontWeight: 800, fontSize: 13,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             cursor: 'pointer', transition: 'transform 0.15s, filter 0.15s',
           }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.filter = 'brightness(1.06)'; }}
           onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.filter = 'brightness(1)'; }}
         >
-          <LogIn size={16} /> Sign up
+          <LogIn size={15} /> Sign in with Google
         </button>
       )}
     </aside>
